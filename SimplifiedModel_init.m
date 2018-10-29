@@ -1,5 +1,10 @@
 close all;
 clc;
 
-T = 10;
-Ts = 0.001;
+simulationDuration_s = 10;
+simulationTimeStep_s = 0.001;
+
+
+cosineSquaredEnvironment_init;
+openLoopController_init;
+nonlinearPlant_init;
