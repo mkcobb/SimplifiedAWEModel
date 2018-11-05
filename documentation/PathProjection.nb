@@ -1,0 +1,168 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      5265,        160]
+NotebookOptionsPosition[      4772,        139]
+NotebookOutlinePosition[      5113,        154]
+CellTagsIndexPosition[      5070,        151]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["\<\
+This notebook derives the expression that must be minimized to find the \
+minimum distance to the path\
+\>", "Text",
+ CellChangeTimes->{{3.7504218768088646`*^9, 3.7504219165087957`*^9}}],
+
+Cell["\<\
+This is the expression for the shape of the path, w is the total \
+\[OpenCurlyDoubleQuote]width\[CloseCurlyDoubleQuote], h is the total \
+\[OpenCurlyDoubleQuote]height\[CloseCurlyDoubleQuote], \[Phi] is a scalar \
+variable between 0 and 1 (inclusive).\
+\>", "Text",
+ CellChangeTimes->{{3.7504221533852863`*^9, 3.750422200706259*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"path", " ", "=", " ", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"w", "/", "2"}], ")"}], "*", 
+      RowBox[{"Cos", "[", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"2", "*", "\[Phi]"}], "+", 
+          RowBox[{"3", "/", "2"}]}], ")"}], "*", "Pi"}], "]"}]}], ",", 
+     RowBox[{"h", "*", 
+      RowBox[{"Cos", "[", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"2", "*", "\[Phi]"}], "+", 
+          RowBox[{"3", "/", "2"}]}], ")"}], "*", "Pi"}], "]"}], "*", 
+      RowBox[{"Sin", "[", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"2", "*", "\[Phi]"}], "+", 
+          RowBox[{"3", "/", "2"}]}], ")"}], "*", "Pi"}], "]"}]}]}], "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.7504205310695667`*^9, 3.7504205917637815`*^9}, {
+   3.7504206241288757`*^9, 3.750420671160808*^9}, {3.75042071308055*^9, 
+   3.7504207621683702`*^9}, {3.750420838348113*^9, 3.75042083892817*^9}, {
+   3.7504210459229465`*^9, 3.7504211014828897`*^9}, {3.7504211420246267`*^9, 
+   3.750421263036932*^9}, {3.7504213373024282`*^9, 3.750421462327114*^9}, {
+   3.750421935256198*^9, 3.7504220630218825`*^9}, 3.750422204149659*^9, {
+   3.7504245142617135`*^9, 3.750424515972267*^9}}],
+
+Cell["This line takes the derivative of the above expression.", "Text",
+ CellChangeTimes->{{3.750422207181264*^9, 3.750422215822039*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Simplify", "[", 
+  RowBox[{
+   RowBox[{"D", "[", 
+    RowBox[{
+     RowBox[{
+      SuperscriptBox[
+       RowBox[{"(", 
+        RowBox[{"x", "-", 
+         RowBox[{"path", "[", 
+          RowBox[{"[", "1", "]"}], "]"}]}], ")"}], "2"], "+", 
+      SuperscriptBox[
+       RowBox[{"(", 
+        RowBox[{"y", "-", 
+         RowBox[{"path", "[", 
+          RowBox[{"[", "2", "]"}], "]"}]}], ")"}], "2"]}], ",", "\[Phi]"}], 
+    "]"}], ",", 
+   RowBox[{"Assumptions", "\[Rule]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"x", ",", "y", ",", "w", ",", "h"}], "}"}], "\[Element]", 
+       "Reals"}], ",", 
+      RowBox[{"0", "<", "\[Phi]"}], ",", 
+      RowBox[{"1", ">", "\[Phi]"}]}], "}"}]}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.750421468049611*^9, 3.7504214969645348`*^9}, {
+  3.7504220561831684`*^9, 3.750422141124812*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox["1", "2"], " ", "\[Pi]", " ", 
+  RowBox[{"(", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"-", "4"}], " ", "w", " ", "x", " ", 
+     RowBox[{"Cos", "[", 
+      RowBox[{"2", " ", "\[Pi]", " ", "\[Phi]"}], "]"}]}], "+", 
+    RowBox[{"8", " ", "h", " ", "y", " ", 
+     RowBox[{"Cos", "[", 
+      RowBox[{"4", " ", "\[Pi]", " ", "\[Phi]"}], "]"}]}], "+", 
+    RowBox[{
+     SuperscriptBox["w", "2"], " ", 
+     RowBox[{"Sin", "[", 
+      RowBox[{"4", " ", "\[Pi]", " ", "\[Phi]"}], "]"}]}], "+", 
+    RowBox[{"2", " ", 
+     SuperscriptBox["h", "2"], " ", 
+     RowBox[{"Sin", "[", 
+      RowBox[{"8", " ", "\[Pi]", " ", "\[Phi]"}], "]"}]}]}], 
+   ")"}]}]], "Output",
+ CellChangeTimes->{{3.7504214889821625`*^9, 3.7504215022961206`*^9}, 
+   3.750422070830116*^9, {3.7504221219884243`*^9, 3.750422143379999*^9}, 
+   3.750424373188181*^9, 3.7504245194714537`*^9}]
+}, Open  ]],
+
+Cell["\<\
+So finding the root of this equation will give the value of \[Phi] that \
+minimizes distance.  Unfortunately, there\[CloseCurlyQuote]s no closed form \
+solution for this so we\[CloseCurlyQuote]ll have to use fzero to minimize the \
+function.\
+\>", "Text",
+ CellChangeTimes->{{3.7504222196485233`*^9, 3.7504222293134537`*^9}, {
+  3.7504225740909767`*^9, 3.750422612413103*^9}}]
+},
+WindowSize->{675, 988},
+WindowMargins->{{Automatic, -7}, {Automatic, 0}},
+FrontEndVersion->"11.0 for Microsoft Windows (64-bit) (July 28, 2016)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 196, 4, 49, "Text"],
+Cell[757, 26, 343, 6, 49, "Text"],
+Cell[1103, 34, 1314, 34, 50, "Input"],
+Cell[2420, 70, 137, 1, 30, "Text"],
+Cell[CellGroupData[{
+Cell[2582, 75, 891, 27, 57, "Input"],
+Cell[3476, 104, 891, 23, 53, "Output"]
+}, Open  ]],
+Cell[4382, 130, 386, 7, 68, "Text"]
+}
+]
+*)
+

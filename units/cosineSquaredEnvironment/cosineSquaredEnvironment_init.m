@@ -1,1 +1,1 @@
-maxSteadySpeed_mPs = 1;
+maxSteadySpeed_mPs = 10;
