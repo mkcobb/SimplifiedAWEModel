@@ -34,3 +34,5 @@ PRIMARY FILE TYPES
 -[DESCRIPTION]_th.slx : "th" = "test harness", as alluded to above, you often want to take individual units or compositions and test them alone, in isolation.  This is a simulink model used for that purpose.  The description should parallel whatever unit or composition that you want to test.  For examble, "gain_th.slx" could be a simulink model where you want to test the unit in the unit library "gain_ul.slx".
 
 -[DESCRIPTION]_ts.m : "ts" = "test script", this is a script used to set parameters and call the test harness model.
+
+-[DESCRIPTION]_prrn.m : "prrn" = "pre-run", this is a script that should be run before running a simulation.  Usually, this initializes the variables needed for whatever model variant is active.
