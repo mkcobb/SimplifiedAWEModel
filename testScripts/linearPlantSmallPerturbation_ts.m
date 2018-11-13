@@ -32,7 +32,7 @@ linearizationControlTrajectoryVector = tscNonlinear.headingSetpoint_rad;
 
 % Key point here: perturb the control signal a little bit, we should still
 % get a figure 8
-openLoopHeadingSetpoint_rad.data = 1.001*openLoopHeadingSetpoint_rad.data;
+openLoopHeadingSetpoint_rad.data = 1.01*openLoopHeadingSetpoint_rad.data;
 
 sim('SimplifiedModel_cm')
 

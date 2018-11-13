@@ -6,4 +6,6 @@ switch VSSC_CONTROLLER
         purePursuitCtrl_cl_init
     case 2
         openLoopCtrl_cl_init
+    case 3
+        purePursuitWithWarpingCtrl_cl_init
 end

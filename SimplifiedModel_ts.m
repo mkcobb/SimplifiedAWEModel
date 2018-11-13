@@ -14,9 +14,11 @@ figure
 grid on
 plot(p(:,1),p(:,2),'DisplayName','Path')
 hold on
-plot(tsc.xPosition_m.data,tsc.yPosition_m.data,'DisplayName','Position')
-plot(tsc.targetX_m.data,tsc.targetY_m.data,'DisplayName','TargetPoint')
-plot(tsc.currentPathPositionX_m.data,tsc.currentPathPositionY_m.data,'DisplayName','TargetPoint')
+plot(squeeze(tsc.xPosition_m.data),...
+    squeeze(tsc.yPosition_m.data),'DisplayName','Position')
+plot(squeeze(tsc.targetX_m.data),...
+    squeeze(tsc.targetY_m.data),'DisplayName','TargetPoint')
+
 
 figure
 tsc.headingSetpoint_rad.plot;
