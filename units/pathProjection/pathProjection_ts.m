@@ -7,7 +7,6 @@ pathPosition_init;
 positionX_m = 20;
 positionY_m = -2;
 
-
 sim('pathProjection_th')
 
 s = linspace(0,1,1000);
