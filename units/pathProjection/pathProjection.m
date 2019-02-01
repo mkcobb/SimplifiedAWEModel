@@ -1,13 +1,5 @@
 function s = pathProjection(s0,x,y,w,h,sDist)
-% function that finds the solution to 
-% s = argmin(distance from current point to path)
-% subject to: s_min < s < s_max
-% where s_min = s0, and s_max = s0+sDist
-
-fun = @(s) norm([x y]-pathPosition(s,w,h));
-s = fminbnd(fun,s0,s0+sDist);
+fHandle = @(s) sqrt(sum(([x y]-pathPosition(s,w,h)).^2,2));
+s = goldenSection(fHandle,s0,s0+sDist,1e-6);
 s = rem(s,1);
-if abs(s-s0)<0.001
-    s = s0;
-end
 end

@@ -1,0 +1,2 @@
+pathPositionLookup =[];
+headingSetpointLookup =[];

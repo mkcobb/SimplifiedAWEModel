@@ -1,4 +1,4 @@
-function parseLogsout(varargin)
+function tsc = parseLogsout(varargin)
 %PARSELOGSOUT function to compile struct named tsc in base workspace.
 %"tsc" = "timeseries collection", is a collection of individual timeseries
 %in a structure.

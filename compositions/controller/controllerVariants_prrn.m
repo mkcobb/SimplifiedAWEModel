@@ -8,4 +8,6 @@ switch VSSC_CONTROLLER
         openLoopCtrl_cl_init
     case 3
         purePursuitWithWarpingCtrl_cl_init
+    case 4
+        pathPositionBasedCtrl_cl_init
 end

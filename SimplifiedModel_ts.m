@@ -6,7 +6,7 @@ simulationDuration_s = 20;
 
 sim('SimplifiedModel_cm')
 
-parseLogsout
+parseLogsout;
 
 p = pathPosition(linspace(0,1,1000),pathWidth_m,pathHeight_m);
 
@@ -18,7 +18,6 @@ plot(squeeze(tsc.xPosition_m.data),...
     squeeze(tsc.yPosition_m.data),'DisplayName','Position')
 plot(squeeze(tsc.targetX_m.data),...
     squeeze(tsc.targetY_m.data),'DisplayName','TargetPoint')
-
 
 figure
 tsc.headingSetpoint_rad.plot;

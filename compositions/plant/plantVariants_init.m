@@ -1,4 +1,4 @@
-plantNames = {'nonlinear','linear'};
+plantNames = {'nonlinear','linearPathDomain'};
 
 VSSC_PLANT = 1;
 

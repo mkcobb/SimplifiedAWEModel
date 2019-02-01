@@ -1,0 +1,154 @@
+
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry} 
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{mathtools}
+\usepackage{listings}
+\usepackage{array}
+\usepackage{float}
+\usepackage{color} %red, green, blue, yellow, cyan, magenta, black, white
+\definecolor{mygreen}{RGB}{28,172,0} % color values Red, Green, Blue
+\definecolor{mylilas}{RGB}{170,55,241}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newenvironment{theorem}[2][Theorem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{lemma}[2][Lemma]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{exercise}[2][Exercise]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{reflection}[2][Reflection]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{proposition}[2][Proposition]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{corollary}[2][Corollary]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+ 
+\newcolumntype{?}{!{\vrule width 1pt}}
+
+\newcommand{\unitvec}[2]{\vec{#1}_{\overline{#2}}}
+ 
+\begin{document}
+ 
+ \lstset{language=Matlab,%
+ 	%basicstyle=\color{red},
+ 	breaklines=true,%
+ 	morekeywords={matlab2tikz},
+ 	keywordstyle=\color{blue},%
+ 	morekeywords=[2]{1}, keywordstyle=[2]{\color{black}},
+ 	identifierstyle=\color{black},%
+ 	stringstyle=\color{mylilas},
+ 	commentstyle=\color{mygreen},%
+ 	showstringspaces=false,%without this there will be a symbol in the places where there is a space
+ 	numbers=left,%
+ 	numberstyle={\tiny \color{black}},% size of the numbers
+ 	numbersep=9pt, % this defines how far the numbers are from the text
+ 	emph=[1]{for,end,break},emphstyle=[1]\color{red}, %some words to emphasise
+ 	%emph=[2]{word1,word2}, emphstyle=[2]{style},    
+ }
+ 
+ 
+%\begin{flushright}
+%	Mitchell Cobb\\
+%\end{flushright}
+
+%\lstinputlisting{problem1.m}
+
+\section*{Introduction}
+The goal of this document is to obtain a linearized state space model that is parameterized in terms of the path arc length $s$, instead of time, $t$, as normal.  If we begin with a normal state space model:
+\begin{equation}\begin{split}
+\dot{x}_1&=f_1(\vec{x},\vec{u})\\
+\dot{x}_2&=f_2(\vec{x},\vec{u})\\
+&\vdots\\
+\dot{x}_n&=f_n(\vec{x},\vec{u})\\
+\end{split}
+\end{equation}
+and then apply the chain rule:
+\begin{equation}
+\begin{split}
+\frac{d\dot{x}_1}{ds}\frac{ds}{dt}&=f_1(\vec{x},\vec{u})\\
+&\vdots\\
+\frac{d\dot{x}_n}{ds}\frac{ds}{dt}&=f_n(\vec{x},\vec{u})
+\end{split}
+\end{equation}
+now, if we move the $\frac{ds}{dt}$ term to the other side, we get:
+\begin{equation}
+\begin{split}
+\frac{d\dot{x}_1}{ds}&=f_1(\vec{x},\vec{u})\left(\frac{ds}{dt}\right)^{-1}\\
+&\vdots\\
+\frac{d\dot{x}_n}{ds}&=f_n(\vec{x},\vec{u})\left(\frac{ds}{dt}\right)^{-1}
+\end{split}
+\end{equation}
+Writing this in vectorized notation:
+\begin{equation}\label{eqn:nonlinearPathParameterized}
+\frac{d\dot{\vec{x}}}{ds}=\vec{F}(\vec{x},\vec{u})\left(\frac{ds}{dt}\right)^{-1}
+\end{equation}
+In MATLAB, the function \texttt{linmod} will linearize a model for us.  What we can do is, define a Simulink block that calculates $\frac{ds}{dt}$ and implement a Simulink model that represents \ref{eqn:nonlinearPathParameterized}.  Then, when we run \texttt{linmod} on this Simulink model, it will return $A$, $B$, and $C$ matrices that are parameterized with respect to the spatial coordinate $s$.  However, there are a few subtle points about this that I think I should write down:
+\begin{itemize}
+	\item \texttt{linmod} performs a lineraization around a constant operating point, \emph{not} a trajectory of operating points.  So it's probably going to be necessary to wrap \texttt{linmod} into a for loop that steps through all the state vectors in order of the path arc length.
+	\item In implementing $\frac{ds}{dt}$ in simulink, I don't think that it's sufficient to first calculate $s$ and then take a (non-causal) numerical derivative.  I don't think that a numerical derivative will behave as we want it within \texttt{linmod}.  I believe that \texttt{linmod} doesn't ``march'' or ``change'' time at all when linearizing, so the value of this approximate derivative will not change at all from the initial condition within linmod.  Instead, I think we need to analytically calculate (or analytically approximate) $\frac{ds}{dt}$, which is what the next section is about.
+\end{itemize}
+\section*{Approximating the Path Speed}
+So I think that in order to do this rigorously, I need to first define some coordinate systems and variables.  There are 3 coordinate frames, the global reference frame $\overline{U}$, the body fixed reference frame, $\overline{B}$, and the Serret-Frenet frame attached to the path, $\overline{S}$.  Each of these coordinate frames is comprised of a point, which defines the origin of the coordinate system, along with three unit vectors:
+\begin{align}
+\overline{U} &= \{U,\unitvec{i}{U},\unitvec{j}{U},\unitvec{k}{U}\}\\
+\overline{B} &= \{B,\unitvec{i}{B},\unitvec{j}{B},\unitvec{k}{B}\}\\
+\overline{S} &= \{S,\unitvec{i}{S},\unitvec{j}{S},\unitvec{k}{S}\}.
+\end{align}
+The Serret-Frenet frame is defined so that the point $S$, which is the origin of the coordinate system, lies on the path.  Thus, the simple version shape of the path relative to the point $U$ is described by:
+\begin{equation}\label{eqn:pathShape}
+\vec{r}_{S/U}(\phi)=W \cos(\theta) \unitvec{i}{U} + H \sin (2\theta)\unitvec{j}{U}.
+\end{equation}
+However, in order to get this to start and end at the correct points (and travel in the right direction on the figure 8), we can make the substitution that $\theta \rightarrow \left(\frac{3}{2}+2\phi\right)\pi$.  In this case the nondimensional parameter $\phi\in[0 1]$ results in the type of motion around the path that we want.  Specifically $\phi = 0$ starts at the center of the figure 8 and $\phi=1$ ends up back at the center.
+
+The unit vector $\unitvec{i}{S}$ is defined to be tangent to the path, pointing in the direction of increasing arc length, $s$ (note that this makes it a function of $\phi$).  In general, the path arc length $s$ is given by
+\begin{equation}
+s=\int_{s_i}^{s_f}\| \frac{d}{d\phi}\vec{r}_{S/U}(\phi)\| d\phi.
+\end{equation}
+In our case, this integral is \emph{extremely} difficult to solve, and it looks like it actually wasn't solved until about 2006 and it requires a bunch of really high level math.  So I don't think that finding an expression for this, and then differentiating with respect to time is going to be possible.  Instead, what I'd like to do is the following:
+\begin{equation}\label{sdot}
+\frac{d}{dt}s = {}^{\overline{U}}\vec{v}_{B/U}\cdot \unitvec{i}{s},
+\end{equation}
+basically, take the component of the velocity in the direction of the tangent vector of the Serret-Frenet frame.  So in order to do this, we need to find all the things on the right hand side of \ref{sdot}.  The first term is pretty easy, specifically:
+\begin{equation}
+{}^{\overline{U}}\vec{v}_{B/U} = v \cos(\psi) \unitvec{i}{U} + v \sin(\psi) \unitvec{i}{U}
+\end{equation}
+where $v$ is the speed of our system and $\psi$ is the heading angle, measured as the angle that goes from $\unitvec{i}{U}$ to $\unitvec{i}{B}$.  The second term in \ref{sdot} is the part that is slightly mode subtle.  Recall that $\unitvec{i}{S}$ varies with $\phi$, so then we have two questions:
+\begin{enumerate}
+	\item what is the expression for $\unitvec{i}{S}$ as a function or $\phi$ and,
+	\item how do we find the appropriate $\phi$ for a specified state of the system (this is the projection operation).
+\end{enumerate}
+
+Answering the first question isn't terrible.  The unit tangent vector for any generic path described by $\vec{r}(\phi)$ is given by:
+\begin{equation}
+\frac{\frac{d}{d\phi}\vec{r}(\phi)}{\|\frac{d}{d\phi}\vec{r}(\phi) \|}.
+\end{equation}
+Therefore in our case, $\unitvec{i}{S}$ is given by:
+\begin{equation}
+\unitvec{i}{S} = \frac{W \cos (2 \pi  \phi )}{\sqrt{4 H^2 \cos ^2(4 \pi  \phi )+W^2 \cos ^2(2 \pi  \phi )}}\unitvec{i}{U}-\frac{2 H \cos (4 \pi  \phi )}{\sqrt{4 H^2 \cos ^2(4 \pi  \phi )+W^2 \cos ^2(2 \pi  \phi )}}\unitvec{j}{U}.
+\end{equation}
+
+We could solve the second question in two ways, we could take an analytical approach, or a numerical approach.  I think that the analytical approach might be possible, but I've worked on it for a while and it's certainly nontrivial.  Since that's not the focus of this work, it's probably better to take the numerical approach.
+
+The goal is to find the appropriate value of $\phi$ so that we know what the correct $\unitvec{i}{S}$ is to use in equation \ref{sdot}.  If we call that value $\phi^*$, then it is given by:
+\begin{equation}
+\phi^* = \mathrm{arg}\; \underset{\phi}{\mathrm{min}} \| \vec{r}_{B/S}\|,
+\end{equation}
+where the position vector $\vec{r}_{B/S}$ relates the position of the body-fixed coordinate system to a point $S$ on the path.  Specifically, $\vec{r}_{B/S} = \vec{r}_{B/U}-\vec{r}_{S/U}$ where $\vec{r}_{S/U}$ is a function of $\phi$.  If we restrict the domain of this problem then I think it becomes pretty easy to solve quickly (thus keeping our simulations from taking forever).  Specifically, I've already implemented the following in Simulink:
+\begin{equation}
+\begin{split}
+\phi^* = \underset{1}{\mathrm{rem}}&\bigg(\mathrm{arg}\; \underset{\phi}{\mathrm{min}}  \| \vec{r}_{B/S} \| \bigg)\\
+\mathrm{subj. to: }  &\;\phi_{k-1}\leq\phi\leq\phi_{k-1}+\Delta\phi
+\end{split}
+\end{equation}
+Where $\phi_{k-1}$ is the value of $\phi$ found at the previous time step, and $\Delta\phi$ is a user-set parameter.  Also, the function $\underset{1}{\mathrm{rem}}$ indicates the mathematical remainder under division by 1 (I don't know if there's a better way to notate this).  This just makes sure that we keep $\phi$ in the appropriate range.
+
+In summary, the block diagram shown in the figure below is what I'm proposing as the representation of equation $\ref{eqn:nonlinearPathParameterized}$.  So I would build this in Simulink and run \texttt{linmod} on it with every $\vec{x}(s)$ from the previous iteration as the linearization points to get our path linearization.
+
+\begin{figure}[H]
+	\includegraphics[width=\columnwidth]{BlockDiagram.jpg}
+\end{figure}
+
+
+
+\end{document} 
