@@ -1,6 +1,8 @@
 % TEST 2: COMPARE THE RESULTS FROM THE NONLINEAR MODEL WITH THE RESULTS
 % FROM THE PATH-LINEARIZED MODEL USING A SLIGHTLY PERTURBED INPUT
 
+plotSwitch = true;
+
 %% First run the nonlinear model to get the linearization trajectory
 close all;clc
 clearvars tsc tscOrig
@@ -12,11 +14,27 @@ VSSC_PLANT = 1;      % Run the nonlinear, time-domain plant
 sim('SimplifiedModel_cm')
 parseLogsout;
 tscOrig = cropTSC2LapNumber(tsc,numberOfLaps_none);
+if plotSwitch
+    plot(squeeze(tscOrig.xPosition_m.data),squeeze(tscOrig.yPosition_m.data))
+    hold on
+    grid on
+    path = pathPosition(linspace(0,1,1000),pathWidth_m,pathHeight_m);
+    plot(path(:,1),path(:,2))
+end
 clearvars tsc
 
 %% Now do the linearizations and build the lookup tables
 decimation = 100;
-linPlnt = linearizePlant(decimation,tscOrig);
+pathStep = 0.001;
+[linPlnt,linPlntDisc] = linearizePlant(decimation,pathStep,tscOrig);
+
+if plotSwitch
+    plotLinearPlant(linPlnt);
+    plotLinearPlant(linPlntDisc);
+end
+% Test, overwrite the continuous plant with the discrete plant, so that it
+% gets used in simulation
+linPlnt = linPlntDisc;
 
 %% Perturb the input and run the nonlinear model
 clearvars tsc tscNLPert
@@ -35,7 +53,7 @@ openLoopHeadingSetpoint_rad.Time    = openLoopHeadingSetpoint_rad.Time-...
     openLoopHeadingSetpoint_rad.Time(1);
 
 % Apply the perturbation
-openLoopHeadingSetpoint_rad.data = openLoopHeadingSetpoint_rad.data*1.1;
+openLoopHeadingSetpoint_rad.data = openLoopHeadingSetpoint_rad.data*1.2;
 
 % Set the simulation duration
 simulationDuration_s = openLoopHeadingSetpoint_rad.Time(end);
@@ -54,7 +72,7 @@ VSSC_CONTROLLER = 2; % Run the open loop controller
 VSSC_PLANT = 2;      % Run the linear, path-domain plant
 
 simulationDuration_s = 1; % This is really the final value of the path variable
-simulationTimeStep_s = 0.001; % This is really the path variable step size
+simulationTimeStep_s = pathStep; % This is really the path variable step size
 
 % Overwrite the time of the open loop controller with the path position
 openLoopHeadingSetpoint_rad.data = tscOrig.currentPathPosition_none.data;
@@ -131,45 +149,3 @@ ylabel('y Position, [m]')
 set(gca,'FontSize',24)
 fileName = 'tst2_PositionComparison';
 savePlot(gcf,folder,fileName);
-
-
-%% OTHER Plots
-% Plot the elements of A
-
-h.fig.deltaXSim = figure;
-axNum = 1;
-for ii = 1:size(deltaXSim.data,1)
-    for jj = 1:size(deltaXSim.data,2)
-        subplot(size(deltaXSim.data,1),size(deltaXSim.data,2),axNum)
-        plot(deltaXSim.time,...
-            squeeze(deltaXSim.data(ii,jj,:)))
-        ylabel(['$\delta \vec{x}$( ' num2str(ii) ' , ' num2str(jj) ' )'])
-        grid on
-        axNum = axNum+1;
-    end
-end
-linkaxes(findall(gcf,'Type','axes'),'x')
-set(findall(gcf,'Type','axes'),'FontSize',16)
-name = 'tst2_deltaXSim';
-savePlot(gcf,folder,name)
-% 
-% 
-% % Plot the elements of deltaU obtained from simulation
-% h.fig.deltaUSim = figure;
-% axNum = 1;
-% for ii = 1:size(deltaUSim.data,1)
-%     for jj = 1:size(deltaUSim.data,2)
-%         subplot(size(deltaUSim.data,1),size(deltaUSim.data,2),axNum)
-%         plot(deltaUSim.time,...
-%             squeeze(deltaUSim.data(ii,jj,:)))
-%         ylabel(['$\delta \vec{u}$( ' num2str(ii) ' , ' num2str(jj) ' )'])
-%         grid on
-%         axNum = axNum+1;
-%     end
-% end
-% linkaxes(findall(gcf,'Type','axes'),'x')
-% set(findall(gcf,'Type','axes'),'FontSize',16)
-% name = 'tst2_deltaUSim';
-% savePlot(gcf,folder,name)
-% 
-% 
