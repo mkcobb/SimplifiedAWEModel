@@ -1,6 +1,6 @@
 % TEST 2: COMPARE THE RESULTS FROM THE NONLINEAR MODEL WITH THE RESULTS
 % FROM THE PATH-LINEARIZED MODEL USING A SLIGHTLY PERTURBED INPUT
-
+% Test
 plotSwitch = true;
 
 %% First run the nonlinear model to get the linearization trajectory
