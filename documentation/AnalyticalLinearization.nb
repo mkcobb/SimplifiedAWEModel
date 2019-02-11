@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    156607,       4259]
-NotebookOptionsPosition[    154141,       4180]
-NotebookOutlinePosition[    154516,       4196]
-CellTagsIndexPosition[    154473,       4193]
+NotebookDataLength[    159931,       4370]
+NotebookOptionsPosition[    157227,       4283]
+NotebookOutlinePosition[    157602,       4299]
+CellTagsIndexPosition[    157559,       4296]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -4176,6 +4176,109 @@ Cell[BoxData[
    MatrixForm[BoxForm`e$]]]], "Output",
  CellChangeTimes->{{3.7585711383827457`*^9, 3.75857116945562*^9}, 
    3.7585712356325836`*^9, {3.7586294323900633`*^9, 3.7586294528792305`*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Grad", "[", 
+   RowBox[{"F", ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"x", "[", "t", "]"}], ",", 
+      RowBox[{"y", "[", "t", "]"}], ",", 
+      RowBox[{"v", "[", "t", "]"}], ",", 
+      RowBox[{"\[Psi]", "[", "t", "]"}]}], "}"}]}], "]"}], "//", 
+  "MatrixForm"}]], "Input",
+ CellChangeTimes->{{3.758638300751936*^9, 3.758638301897521*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", "0", 
+      RowBox[{"Cos", "[", 
+       RowBox[{"\[Psi]", "[", "t", "]"}], "]"}], 
+      RowBox[{
+       RowBox[{"-", 
+        RowBox[{"Sin", "[", 
+         RowBox[{"\[Psi]", "[", "t", "]"}], "]"}]}], " ", 
+       RowBox[{"v", "[", "t", "]"}]}]},
+     {"0", "0", 
+      RowBox[{"Sin", "[", 
+       RowBox[{"\[Psi]", "[", "t", "]"}], "]"}], 
+      RowBox[{
+       RowBox[{"Cos", "[", 
+        RowBox[{"\[Psi]", "[", "t", "]"}], "]"}], " ", 
+       RowBox[{"v", "[", "t", "]"}]}]},
+     {"0", "0", 
+      RowBox[{"-", 
+       FractionBox["1", 
+        SubscriptBox["\[Tau]", "s"]]}], 
+      RowBox[{"-", 
+       FractionBox[
+        RowBox[{"2", " ", 
+         RowBox[{"Cos", "[", 
+          RowBox[{"\[Psi]", "[", "t", "]"}], "]"}], " ", 
+         RowBox[{"Sin", "[", 
+          RowBox[{"\[Psi]", "[", "t", "]"}], "]"}], " ", 
+         SubscriptBox["V", "SS"]}], 
+        SubscriptBox["\[Tau]", "s"]]}]},
+     {"0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["1", 
+        SubscriptBox["\[Tau]", "h"]]}]}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Center}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellChangeTimes->{{3.7586382971841297`*^9, 3.7586383022425976`*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Grad", "[", 
+   RowBox[{"F", ",", 
+    RowBox[{"{", 
+     RowBox[{
+      SubscriptBox["\[CapitalPsi]", "SP"], "[", "t", "]"}], "}"}]}], "]"}], "//",
+   "MatrixForm"}]], "Input",
+ CellChangeTimes->{{3.758638318296653*^9, 3.75863832270885*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0"},
+     {"0"},
+     {"0"},
+     {
+      FractionBox["1", 
+       SubscriptBox["\[Tau]", "h"]]}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Center}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellChangeTimes->{3.758638323102792*^9}]
 }, Open  ]]
 },
 WindowSize->{1920, 997},
@@ -4259,7 +4362,15 @@ Cell[134138, 3659, 844, 19, 83, "Text"],
 Cell[CellGroupData[{
 Cell[135007, 3682, 1066, 27, 122, "Input"],
 Cell[136076, 3711, 9023, 232, 256, "Output"],
-Cell[145102, 3945, 9023, 232, 313, "Output"]
+Cell[145102, 3945, 9023, 232, 256, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[154162, 4182, 387, 11, 51, "Input"],
+Cell[154552, 4195, 1644, 48, 197, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[156233, 4248, 277, 8, 51, "Input"],
+Cell[156513, 4258, 698, 22, 171, "Output"]
 }, Open  ]]
 }
 ]
