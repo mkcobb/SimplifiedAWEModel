@@ -95,3 +95,6 @@ linPlnt.B.data(2,1,:) = 0;
 linPlnt.B.data(3,1,:) = 0;
 linPlnt.B.data(4,1,:) = (c.*pi)./(d1.*headingTau.*v);
 
+linPlnt.C.data=repmat(eye(size(linPlnt.A.data(:,:,1))),[1 1 size(linPlnt.A.data,3)]);
+linPlnt.D.data(:,:,:) = 0;
+

@@ -7,4 +7,9 @@ while s<0
 end
 % Wrap values greater than 1 into the 0,1 range (eg 1.1 should be 0.1)
 s = rem(s,1);
+% Round to the nearest 5 decimal places
+% This step is actually critical because it ensures that some path
+% positions are read as exactly 0 and 1, thus making
+% resampling/interpolating possible in some scripts.
+s = round(s,6);
 end

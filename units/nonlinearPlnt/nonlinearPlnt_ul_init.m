@@ -1,7 +1,7 @@
 speedTimeConstant_s = 1;
 initialSpeed_mPs    = 5;
 
-headingTimeConstant_s = 1;
+headingTimeConstant_s = 0.1;
 
 % Note that this has to be run after the path is specified (usually
 % initialized in the controller)
