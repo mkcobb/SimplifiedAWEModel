@@ -7,7 +7,7 @@ vss         = evalin('base','maxSteadySpeed_mPs');
 w           = evalin('base','pathWidth_m');
 h           = evalin('base','pathHeight_m');
 
-phi         = parameterizationVariable;
+phi         = linPlnt.A.Time;
 
 % vet vectors (parameterized over path variable)
 x = squeeze(linPlnt.stateVector.data(1,:,:));
@@ -94,7 +94,3 @@ linPlnt.B.data(1,1,:) = 0;
 linPlnt.B.data(2,1,:) = 0;
 linPlnt.B.data(3,1,:) = 0;
 linPlnt.B.data(4,1,:) = (c.*pi)./(d1.*headingTau.*v);
-
-linPlnt.C.data=repmat(eye(size(linPlnt.A.data(:,:,1))),[1 1 size(linPlnt.A.data,3)]);
-linPlnt.D.data(:,:,:) = 0;
-

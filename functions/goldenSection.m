@@ -2,7 +2,7 @@ function xStar = goldenSection(fHandle,xl,xr,convTol)
 % One-dimensional function minimization
 tau = 1 - 0.38197;
 X = [xl tau*xl+(1-tau)*xr (1-tau)*xl+tau*xr xr];
-F = fHandle(X);
+F = [fHandle(X(1)) fHandle(X(2)) fHandle(X(3)) fHandle(X(4))];
 for ii = 1:1000
     if F(2)<F(3)
         X(4) = X(3);

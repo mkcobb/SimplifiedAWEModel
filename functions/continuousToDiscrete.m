@@ -24,10 +24,13 @@ for ii = 1:size(linPlnt.A.data,3)
     % linPlntDisc.D.data(:,:,ii) = D;
     
     [Ad, Bd] = c2d(linPlnt.A.data(:,:,ii),linPlnt.B.data(:,:,ii),stepSize);
+    if any(isnan(Ad(:)))
+        x = 1;
+    end
     linPlntDisc.A.data(:,:,ii) = Ad;
     linPlntDisc.B.data(:,:,ii) = Bd;
-    linPlntDisc.C.data(:,:,ii) = identityMatrix;
-    linPlntDisc.D.data(:,:,ii) = zeroMatrix;
+%     linPlntDisc.C.data(:,:,ii) = identityMatrix;
+%     linPlntDisc.D.data(:,:,ii) = zeroMatrix;
 end
 
 
