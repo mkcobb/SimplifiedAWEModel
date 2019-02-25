@@ -109,7 +109,14 @@ for ii = 2:numIterations
     [~,linPlntDisc] = linearizePlant(tscc{ii-1},'Analytical','Path',pathStep);
     
     % Now build the lifted system representation
-    [F,G] = buildLiftedSytemMatrix(linPlntDisc);
+    [F,G] = buildLiftedSytemMatrix(linPlntDisc.A.data,linPlntDisc.A.data);
+    
+    
+    % ILC Update function in a perfect world
+    % Inputs: nominal trajectories (x0 and u0), F, G, appropriate weighting
+    % matrices (depending on whether we do quad or lin prog), limits on
+    % u, deltau and deltaTimeSteps
+    % Outputs: uStar
     
     % Build H and f
     H = G'*(PsiW+PsiW)*G;
@@ -133,17 +140,17 @@ for ii = 2:numIterations
     plot(deltauStar,'Parent',ax3)
     
     xStar = x0+F*deltax0+G*deltauStar;
-%     J(ii) =   xStar'*PsiV*xStar+  (xStar-xw)'*PsiW*(xStar-xw)
-%     
+    %     J(ii) =   xStar'*PsiV*xStar+  (xStar-xw)'*PsiW*(xStar-xw)
+    %
     xStar = reshape(xStar,[4 1 numel(linPlntDisc.A.Time)]);
     
-figure;    plot(squeeze(xStar(1,:,:)),squeeze(xStar(2,:,:)))
+    figure;    plot(squeeze(xStar(1,:,:)),squeeze(xStar(2,:,:)))
     
     projectionBreakpoints = linPlntDisc.A.Time;
-    p = pathPosition(projectionBreakpoints',pathWidth_m,pathHeight_m);
-%     projectionX = p(:,1);
-%     projectionY = p(:,2);
-%     
+%         p = pathPosition(projectionBreakpoints',pathWidth_m,pathHeight_m);
+%         projectionX = p(:,1);
+%         projectionY = p(:,2);
+    %
     projectionX = squeeze(xStar(1,1,:));
     projectionY = squeeze(xStar(2,1,:));
     

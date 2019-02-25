@@ -46,10 +46,9 @@ switch upper(type)
             nan([numStates numInputs numSteps]),...
             newTimeVec);
         
-%         linPlnt.C = linPlnt.A;
-%         linPlnt.D = linPlnt.B;
     case 'TIME'
-       
+       % Need code here to preallocate linPlnt for the time domain
+       % linearization
         x = 1;
 end
 
