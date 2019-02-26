@@ -2,6 +2,7 @@
 % FROM THE PATH-LINEARIZED MODEL USING A SLIGHTLY PERTURBED INPUT
 plotSwitch = true;
 
+
 %% First run the nonlinear model to get the linearization trajectory
 close all;clc
 clearvars tsc tscOrig
@@ -52,9 +53,13 @@ openLoopHeadingSetpoint_rad.Time    = openLoopHeadingSetpoint_rad.Time-...
 
 % Apply the perturbation
 perturbation = nan(size(openLoopHeadingSetpoint_rad.data));
+% Perturbation 1: disturb the last bit
+% perturbation(:) = flip((10*pi/180)*exp(-linspace(0,10,numel(openLoopHeadingSetpoint_rad.data))));
+
+% Perturbation 2: disturb the first bit    
 perturbation(:) = (10*pi/180)*exp(-linspace(0,10,numel(openLoopHeadingSetpoint_rad.data)));
 openLoopHeadingSetpoint_rad.data = ...
-    openLoopHeadingSetpoint_rad.data + flip(perturbation);
+    openLoopHeadingSetpoint_rad.data + perturbation;    
 
 % Set the simulation duration
 simulationDuration_s = openLoopHeadingSetpoint_rad.Time(end);
@@ -93,62 +98,74 @@ tscLnPert = tsc;
 clearvars tsc
 
 %% Plot all the results
+lineWidth = 2;
+fontSize = 32;
 close all
 clearvars tsc
 folder = fileparts(which('SimplifiedModel.prj'));
 folder = fullfile(folder,'output','figures');
 
+
+% Plot the perturbation
+figure
+plot(squeeze(perturbation)*180/pi,'LineWidth',lineWidth)
+box off
+set(gca,'FontSize',fontSize)
+xlabel('Vector Index','FontSize',fontSize)
+ylabel('Control Input Perturbation, [deg]','FontSize',fontSize)
+
 % Plot the heading
 figure;
 plot(tscNLPert.currentPathPosition_none.data,...
     squeeze(tscNLPert.heading_rad.data),...
-    'DisplayName','NL Model + Pert.','LineWidth',1)
+    'DisplayName','NL Model + Pert.','LineWidth',lineWidth)
 grid on
 hold on
 plot(tscLnPert.heading_rad,...
-    'DisplayName','Lin Model + Pert.','LineWidth',1)
+    'DisplayName','Lin Model + Pert.','LineWidth',lineWidth)
 plot(tscOrig.currentPathPosition_none.data,...
     squeeze(tscOrig.heading_rad.data),...
-    'DisplayName','NL Model, No Pert','LineWidth',1)
+    'DisplayName','NL Model, No Pert','LineWidth',lineWidth)
 legend
 xlabel('Path Variable')
 ylabel('Heading, [rad]')
-set(gca,'FontSize',24)
+set(gca,'FontSize',fontSize)
 fileName = 'tst2_HeadingComparison';
+
 savePlot(gcf,folder,fileName);
 
 % Plot the speed
 figure;
 plot(tscNLPert.currentPathPosition_none.data,squeeze(tscNLPert.speed_mPs.data),...
-    'DisplayName','NL Model + Pert.','LineWidth',1)
+    'DisplayName','NL Model + Pert.','LineWidth',lineWidth)
 grid on
 hold on
 plot(tscLnPert.speed_mPs,...
-    'DisplayName','Lin Model + Pert.','LineWidth',1)
+    'DisplayName','Lin Model + Pert.','LineWidth',lineWidth)
 plot(tscOrig.currentPathPosition_none.data,squeeze(tscOrig.speed_mPs.data),...
-    'DisplayName','NL Model, No Pert','LineWidth',1)
+    'DisplayName','NL Model, No Pert','LineWidth',lineWidth)
 legend
 xlabel('Path Variable')
 ylabel('Speed, [m/s]')
-set(gca,'FontSize',24)
+set(gca,'FontSize',fontSize)
 fileName = 'tst2_SpeedComparison';
 savePlot(gcf,folder,fileName);
 
 % Plot the 2D path
 figure;
 plot(squeeze(tscNLPert.xPosition_m.data),squeeze(tscNLPert.yPosition_m.data),...
-    'DisplayName','NL Model + Pert.','LineWidth',1)
+    'DisplayName','NL Model + Pert.','LineWidth',lineWidth)
 grid on
 hold on
 plot(squeeze(tscLnPert.xPosition_m.data),...
     squeeze(tscLnPert.yPosition_m.data),...
-    'DisplayName','Lin Model + Pert.','LineWidth',1)
+    'DisplayName','Lin Model + Pert.','LineWidth',lineWidth)
 plot(squeeze(tscOrig.xPosition_m.data),squeeze(tscOrig.yPosition_m.data),...
-    'DisplayName','NL Model, No Pert','LineWidth',1)
+    'DisplayName','NL Model, No Pert','LineWidth',lineWidth)
 
 legend
 xlabel('x Position, [m]')
 ylabel('y Position, [m]')
-set(gca,'FontSize',24)
+set(gca,'FontSize',fontSize)
 fileName = 'tst2_PositionComparison';
 savePlot(gcf,folder,fileName);

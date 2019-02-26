@@ -1,5 +1,6 @@
 % Script initializes variants in base workspace
-controllerNames = {'purePursuit','openLoop','purePursuitWithWarping'};
+controllerNames = {'purePursuit','openLoop','purePursuitWithWarping',...
+    'openLoopPathDomain','ILCPurePursuit'};
 VSSC_CONTROLLER = 1;
 for ii = 1:length(controllerNames)
 eval(['VSS_' upper(controllerNames{ii}) '_CTRL= Simulink.Variant(''VSSC_CONTROLLER==' num2str(ii) ''');'])
