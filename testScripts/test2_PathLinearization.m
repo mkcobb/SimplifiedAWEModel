@@ -27,7 +27,7 @@ clearvars tsc
 %% Now do the linearizations and build the lookup tables
 fprintf('\nLinearizing model')
 pathStep = 0.001;
-linPlnt = linearizePlant(tscOrig,'Analytical','Path');
+linPlnt = linearizePlant(tscOrig,'Analytical','Time');
 
 plotLinearPlant(linPlnt)
 if plotSwitch
