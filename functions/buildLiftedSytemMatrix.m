@@ -13,7 +13,7 @@ function [F,G] = buildLiftedSytemMatrix(A,B)
 
 % Preallocate F as cell array, each cell is 1 block of block matrix
 F = cell(size(A,3),1);
-F(:) = zeros(size(A(:,:,1)));
+F(:) = {zeros(size(A(:,:,1)))};
 F{1} = A(:,:,1); % Set the first block
 
 % Preallocate G as cell array, each cell is 1 block of block matrix
