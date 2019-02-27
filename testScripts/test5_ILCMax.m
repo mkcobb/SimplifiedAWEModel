@@ -4,11 +4,16 @@
 clear;close all;clc;
 SimplifiedModel_init
 
-pathStep = 0.005; % Path discretization level used in the trajectory linearization
+pathStep = 0.05; % Path discretization level used in the trajectory linearization
 numIterations = 30; % Number of ILC iterations in the whole simulation
 searchDistance_none = 0.05; % distance ahead/behind the last known path position to search for the new path position
 simulationTimeStep_s = 0.02; % simulation time step
+waypointPathVariables = 0.1:0.1:1;
 
+
+waypointPathIndices = round(waypointPathVariables./pathStep)+1;
+pathOnlyWaypoints = zeros(1/pathStep+1,2);
+pathOnlyWaypoints(waypointPathIndices,:) = pathPosition(waypointPathVariables,pathWidth_m,pathHeight_m);
 %% First run the nonlinear model to get the initial trajectory
 simulationDuration_s = inf;
 numberOfLaps_none = 1; % Number of laps to run

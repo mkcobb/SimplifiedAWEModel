@@ -1,6 +1,6 @@
 function [F,G] = buildLiftedSytemMatrix(A,B)
 % function gives F and G in the (equivalent) expressions
-% deltax = F*detlax0 + G*deltau
+% deltax = F*deltax0 + G*deltau
 % x = x0 + F*deltax0 + G*deltau
 % where x0 is the full, lifted state trajectory, (column state vector at
 % every step stacked vertically) and deltax0 is the deviation in initial
