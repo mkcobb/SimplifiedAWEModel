@@ -80,7 +80,8 @@ deltauStar = zeros(size(lb));
 % Iteration 1 was the nonlinear simulation used for intialization, start at 2
 for ii = 2:numIterations
     % Linearize around the previous trajectory
-    [~,linPlntDisc] = linearizePlant(tscc{ii-1},'Analytical','Path',pathStep);
+    [linPlnt,linPlntDisc] = linearizePlant(tscc{ii-1},'Path',pathStep);
+    [linPlnt,~] = linearizePlant(tscc{ii-1},'Time',simulationTimeStep_s);
     
     % Now build the lifted system representation
     [F,G] = buildLiftedSytemMatrix(linPlntDisc.A.data,linPlntDisc.B.data);
@@ -120,10 +121,10 @@ for ii = 2:numIterations
     %     deltauStar = quadprog(H,f,A,b,Aeq,beq,lb,ub,[],options); % quadprog solution
     
     % Option 2: fmincon
-    %     deltauStar = fmincon(@(x) x'*H*x+f*x,zeros(size(ub)),A,b,Aeq,beq,lb,ub); % fmincon solution
+        deltauStar = fmincon(@(x) x'*H*x+f*x,zeros(size(ub)),A,b,Aeq,beq,lb,ub,[],options); % fmincon solution
     
     % Option 3: fmincon + "iterative" element
-    deltauStar = fmincon(@(x) x'*H*x+f*x,deltauStar,A,b,Aeq,beq,lb,ub,[],options) + deltauStar; % fmincon + iteration integration
+%     deltauStar = fmincon(@(x) x'*H*x+f*x,deltauStar,A,b,Aeq,beq,lb,ub,[],options) + deltauStar; % fmincon + iteration integration
     
     xStar = x0+F*deltax0+G*deltauStar;
     
