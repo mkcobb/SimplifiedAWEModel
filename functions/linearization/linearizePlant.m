@@ -64,21 +64,23 @@ switch lower(type)
             tsc.(fieldNames{ii}) = resample(tsc.(fieldNames{ii}),newTimeVec);
         end
         
+        % Step 2: Preallocate data fields
         numSteps    = numel(newTimeVec);
+        % Get the state vector to linearize around
         linPlnt.stateVector = tsc.stateVector;
         % Get the control inputs to linearize around
-        % Set the "time" to be the path position in the timeseries
         linPlnt.ctrlInput   = tsc.headingSetpoint_rad;
-        
-        % Set up the lookup tables that will comprise the linear path-parameterized plant
-        % Set the "time" to be the path position in the timeseries
+        % Add the path variable to the output
+        linPlnt.pathVariable = tsc.currentPathPosition_none;
+        % Build timeseries for A and B matrices
         linPlnt.A = timeseries(...
             nan([numStates numStates numSteps]),...
             newTimeVec);
         linPlnt.B = timeseries(...
             nan([numStates numInputs numSteps]),...
             newTimeVec);
-
+        
+        % Step 3: Do the linearization
         analyticalTimeLinearization
 end
 

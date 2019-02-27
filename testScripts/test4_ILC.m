@@ -80,8 +80,8 @@ deltauStar = zeros(size(lb));
 % Iteration 1 was the nonlinear simulation used for intialization, start at 2
 for ii = 2:numIterations
     % Linearize around the previous trajectory
-    [linPlnt,linPlntDisc] = linearizePlant(tscc{ii-1},'Path',pathStep);
-    [linPlnt,~] = linearizePlant(tscc{ii-1},'Time',simulationTimeStep_s);
+    [~,linPlntDisc] = linearizePlant(tscc{ii-1},'Path',pathStep);
+%     [linPlnt,~] = linearizePlant(tscc{ii-1},'Time',simulationTimeStep_s);
     
     % Now build the lifted system representation
     [F,G] = buildLiftedSytemMatrix(linPlntDisc.A.data,linPlntDisc.B.data);
