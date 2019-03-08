@@ -25,7 +25,7 @@ numberOfLaps_none = 1;
 % Iteration 1 was the nonlinear simulation used for intialization, start at 2
 for ii = 2:numIterations
     % Step 1: Linearize (and discretize) around the previous trajectory
-    [~,linPlntDisc] = linearizePlant(tscc{ii-1},'Analytical','Path',pathStep);
+      [~,linPlntDisc] = linearizePlant(tscc{ii-1},'Path',pathStep);
     
     % Step 2: Build the lifted system representation
     [F,G] = buildLiftedSytemMatrix(linPlntDisc.A.data,linPlntDisc.B.data);

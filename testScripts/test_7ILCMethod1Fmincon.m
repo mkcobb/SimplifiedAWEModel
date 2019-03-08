@@ -5,13 +5,12 @@ SimplifiedModel_init
 plotSwitch = true;
 pathStep = 0.005; % Path discretization level used in the trajectory linearization
 velocityWeight = 1; % Weight on velocity in performance index for ILC update
-waypointWeight = 0;
+waypointWeight = 1;
 numIterations = 50;
 searchDistance_none = 0.05;
 simulationTimeStep_s = 0.02;
 waypointPathVariables = [0.25 0.75 1];
-
-ctrlInputBound = 2*pi/180;
+ctrlInputBound = 5*pi/180;
 numSteps = round(1/pathStep)+1;
 waypointPathIndices = round(waypointPathVariables./pathStep)+1;
 
@@ -30,52 +29,53 @@ ctrlInputBound = repmat(ctrlInputBound,[numSteps 1]);
 ub =   ctrlInputBound;
 lb = - ctrlInputBound;
 % Option 1: Quadratic program
-% options = optimoptions('quadprog','Algorithm','trust-region-reflective');
-options = optimoptions('quadprog','Algorithm','interior-point-convex','ConstraintTolerance',0.1);
+
 
 % Option 2: Fmincon
-% options = optimoptions('fmincon','MaxIterations',10000,'MaxFunctionEvaluations',10000);
+options = optimoptions('fmincon','MaxIterations',10000,...
+    'MaxFunctionEvaluations',100000,'ConstraintTolerance',0.1);
 
 % PsiV, weighting matrix to pick off velocity state
 PsiV = diag(repmat([0 0 -velocityWeight 0]',[numSteps 1]));
 
-% PsiW, weighting matrix for x and y position at waypoints and xw,
-% containing x and y positions of the waypoints
-PsiW = diag(repmat([waypointWeight waypointWeight 0 0]',[numSteps 1]));
-xw = cell(numSteps,1);
-xw(:) = {[0 0 0 0]'};
-for ii = 1:numel(waypointPathVariables)
-    xw(waypointPathIndices(ii)) =...
-        {[pathPosition(waypointPathVariables(ii),pathWidth_m,pathHeight_m) 0 0]'};
+% PsiW, matrix to pick off the values of x and y at the spacific path
+% positions
+PsiW = cell([2*numel(waypointPathIndices),numSteps]);
+PsiW(:) = {[0 0 0 0]};
+for ii = 1: numel(waypointPathIndices)
+   PsiW{2*ii-1,waypointPathIndices(ii)} =  [1 0 0 0];
+   PsiW{2*ii  ,waypointPathIndices(ii)} =  [0 1 0 0];
 end
-xw = cell2mat(xw);
-
-% PsiT, matrix to pick off final x and y values
-PsiT = cell(2,numSteps);
-PsiT(:) = {[0 0 0 0]};
-PsiT(1,end) = {[1 0 0 0]};
-PsiT(2,end) = {[0 1 0 0]};
-PsiT = cell2mat(PsiT);
-
-% rf x,y position of final
-rf = pathPosition([0.25 0.5 1],pathWidth_m,pathHeight_m)';
-DeltaTol = 0.25*[1 1]'; % x-y tolerance around final position
+PsiW = cell2mat(PsiW);
+rw = pathPosition(waypointPathVariables,pathWidth_m,pathHeight_m);
+rw = reshape(rw',[2*numel(waypointPathVariables),1]);
 
 % Set the controller to the open loop, path domain controller
 VSSC_CONTROLLER = 5; % Run the ILC pure pursuit controller
 numberOfLaps_none = 1;
 
 figure;
-ax1 = subplot(2,1,1);
+ax1 = subplot(2,2,[1 2]);
 set(gca,'FontSize',24)
 set(gca,'NextPlot','add');
 grid on
-rectangle('Position',[-DeltaTol(1) -DeltaTol(2) 2*DeltaTol(1) 2*DeltaTol(2)],'EdgeColor','r');
+xlabel('X Position')
+ylabel('Y Position')
 
-ax2 = subplot(2,1,2);
+ax2 = subplot(2,2,3);
 set(gca,'FontSize',24)
 set(gca,'NextPlot','add');
 grid on
+xlabel('Vector Index')
+ylabel('deltauStar')
+
+ax3 = subplot(2,2,4);
+set(gca,'FontSize',24)
+set(gca,'NextPlot','add');
+grid on
+xlabel('Iteration Number')
+ylabel('Duration, [s]')
+scatter(1,tscc{1}.currentPathPosition_none.Time(end));
 
 deltauStar = zeros(size(lb));
 
@@ -99,43 +99,23 @@ for ii = 2:numIterations
     x0 = linPlntDisc.stateVector.data(:);
     
     % Difference in init cond. (next sim starts at xFinal of current sim)
-    deltax0 = tsc.stateVector.data(:,:,end)-tsc.stateVector.data(:,:,1);
+    % deltax0 = tsc.stateVector.data(:,:,end)-tsc.stateVector.data(:,:,1);
+    deltax0 = zeros(size(tsc.stateVector.data(:,:,end)));
     
     % Build H and f
-    H = G'*(PsiW+PsiW)*G;
+    H = G'*(PsiV)*G;
     H = round(H,10); % Round to 10 decimal places to ensure symmetry of hessian
-    
-    f = 2*((x0+F*deltax0)'*(PsiV+PsiW)-xw'*PsiW)*G;
-    
-    % Calculate A and b to apply terminal constraint as inequality constraints
-    A = [PsiT*G;...
-        -PsiT*G];
-    b = [ rf + DeltaTol - PsiT*(x0+F*deltax0);...
-        -rf + DeltaTol + PsiT*(x0+F*deltax0)];
-    % Dont use any inequality constraints
-    %     A = [];
-    %     b = [];
-    
-    Aeq = [];
-    beq = [];
-    
-    % Option 1: quadprog
-    %     deltauStar = quadprog(H,f,A,b,Aeq,beq,lb,ub,[],options); % quadprog solution
-    
-    % Option 2: fmincon
-%         deltauStar = fmincon(@(x) x'*H*x+f*x,zeros(size(ub)),A,b,Aeq,beq,lb,ub,[],options); % fmincon solution
-    
-    % Option 3: fmincon + "iterative" element
-    deltauStar = fmincon(@(x) x'*H*x+f*x,deltauStar,A,b,Aeq,beq,lb,ub,[],options) + deltauStar; % fmincon + iteration integration
-    
-    xStar = x0+F*deltax0+G*deltauStar;
-    
-    % Calculate the value of both terms of the performance index, useful to
-    % determine weighting factors
-    xStar = x0+F*deltax0+G*deltauStar;
-    xStar'*PsiV*xStar;
-    (xStar - xw)'*PsiW*(xStar - xw);
+    f = 2*(x0+F*deltax0)'*PsiV*G;
 
+    % Build Aeq and beq
+    Aeq = PsiW*G;
+    beq = rw - PsiW*(x0+F*deltax0);
+    % Option 1: quadprog
+    
+%     deltauStar = quadprog(H,f,[],[],Aeq,beq,lb,ub,[],options); % quadprog solution
+%     fun = @(x) x'*H*H + F*x;
+    [deltauStar,fval,exitflag,output] = fmincon(@(x) x'*H*x + f*x,deltauStar,[],[],Aeq,beq,lb,ub,[],options);
+    xStar = x0+F*deltax0+G*deltauStar;
     xStar = reshape(xStar,[4 1 numel(linPlntDisc.A.Time)]);
     
     % Calculate the path tracked by the feedforward element (note that the
@@ -145,19 +125,32 @@ for ii = 2:numIterations
     ffPathY = squeeze(xStar(2,1,:));
     
     % Run a nonlinear simulation
-    % Set the initial conditions
-    initialXPosition_m  = tsc.stateVector.data(1,:,end);
-    initialYPosition_m  = tsc.stateVector.data(2,:,end);
-    initialSpeed_mPs    = tsc.stateVector.data(3,:,end);
-    initialHeading_deg  = tsc.stateVector.data(4,:,end)*180/pi;
-    initialPathPosition_none = tsc.currentPathPosition_none.data(end);
+    % Set the initial conditions to be the values at the end of the
+    % previour sim
+%     initialXPosition_m  = tsc.stateVector.data(1,:,end);
+%     initialYPosition_m  = tsc.stateVector.data(2,:,end);
+%     initialSpeed_mPs    = tsc.stateVector.data(3,:,end);
+%     initialHeading_deg  = tsc.stateVector.data(4,:,end)*180/pi;
+%     initialPathPosition_none = tsc.currentPathPosition_none.data(end);
+    
+     % Reset the initial conditions
+    initialXPosition_m  = tsc.stateVector.data(1,:,1);
+    initialYPosition_m  = tsc.stateVector.data(2,:,1);
+    initialSpeed_mPs    = tsc.stateVector.data(3,:,1);
+    initialHeading_deg  = tsc.stateVector.data(4,:,1)*180/pi;
+    initialPathPosition_none = tsc.currentPathPosition_none.data(1);
     
     sim('SimplifiedModel_cm')
     parseLogsout;
     tscc{ii} = cropTSC2LapNumber(tsc,numberOfLaps_none);
     
     plot(squeeze(tsc.xPosition_m.data),squeeze(tsc.yPosition_m.data),'Parent',ax1)
-    plot(linPlntDisc.ctrlInput.Time,deltauStar,'Parent',ax2)
+    plot(deltauStar,'Parent',ax2)
+    if exitflag==1
+        scatter(ii,tscc{ii}.currentPathPosition_none.Time(end),'CData',[0 0 0],'Marker','o','Parent',ax3)
+    else
+        scatter(ii,tscc{ii}.currentPathPosition_none.Time(end),'CData',[1 0 0],'Marker','x','Parent',ax3)
+    end
 end
 % textMe('Simulation complete')
 

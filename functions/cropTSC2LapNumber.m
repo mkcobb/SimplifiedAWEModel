@@ -11,19 +11,32 @@ for ii = 1:length(names)
 end
 
 % Get data that is monotonically increasing
-mask = diff(tscCrop.currentPathPosition_none.data)>0;
-endIndex   = find(mask,1,'last' );
-if endIndex == length(mask)
-   mask = [mask ; 1];
-else
-    mask = [mask ; 0];
+
+
+mask = false(size(tscCrop.currentPathPosition_none.data));
+
+
+% Starting at the middle, march to the end, stop when we hit a decreasing
+% point (kind of a flood-fill algorithm)
+for ii = round(numel(mask)/2) : numel(mask)-1
+   if tscCrop.currentPathPosition_none.data(ii+1)>tscCrop.currentPathPosition_none.data(ii)
+      mask(ii) = true; 
+   else
+       mask(ii) = true; 
+       break
+   end
 end
-endIndex   = find(mask,1,'last' );
-startIndex = find(mask,1,'first');
-
-startTime = tscCrop.lapNumber.time(startIndex); % Start time is the first nonzero element
-endTime   = tscCrop.lapNumber.time(endIndex); % End time is the last nonzero element
-
+for ii = round(numel(mask)/2) :-1: 2
+   if tscCrop.currentPathPosition_none.data(ii-1)<tscCrop.currentPathPosition_none.data(ii)
+      mask(ii) = true; 
+   else
+       
+       break
+   end
+end
+times = tscCrop.currentPathPosition_none.Time(mask);
+startTime = times(1);
+endTime = times(end);
 
 for ii = 1:length(names)
    tscCrop.(names{ii}) =  getsampleusingtime(tscCrop.(names{ii}),startTime,endTime);
