@@ -9,7 +9,7 @@ velocityWeight = 1; % Weight on velocity in performance index for ILC update
 pathHeight_m  = 15;
 pathWidth_m = 50;
 waypointPositionTolerance = 0.25;
-headingTol = 45*pi/180;
+headingTol = 25*pi/180;
 finalHeadingTarget = initialHeading_deg*pi/180;
 numIterations = 100; % Total number of iterations (including initialization lab)
 searchDistance_none = 0.05;
@@ -151,7 +151,7 @@ for ii = 2:numIterations
     %     [deltauStar,~,exitflag,~] = ...
     %         fmincon(@(x) x'*H*x + f*x,deltauStarPrev,A,b,Aeq,beq,lb,ub,[],options);
     [deltauStar,~,exitflag,~,~] = linprog(f,A,b,Aeq,beq,lb,ub);
-    if isempty(deltauStar) || % If linprog fails, just run the previous ff element
+    if isempty(deltauStar) || exitflag ~= 1% If linprog fails, just run the previous ff element
         deltauStar = deltauStarPrev;
     else
         deltauStar = deltauStar + deltauStarPrev;
@@ -205,3 +205,4 @@ xlabel('Iteration Number')
 ylabel('Mean Speed [m/s]')
 
 
+save('output.mat','tscc')
