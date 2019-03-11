@@ -11,7 +11,8 @@ function [linPlnt,linPlntDisc] = linearizePlant(tsc,type,stepSize)
 % "path" for the method argument, then time will actually be the path
 % variable.
 numStates   = numel(tsc.stateVector.data(:,:,1));          % get the number of states in the model
-numInputs   = 1;  % Get the number of inputs
+numInputs   = 1;  % Get clc
+% the number of inputs
 
 % Create a "time" timeseries and add it to the collection to keep
 % track of the time/path variable relationship through all the following
