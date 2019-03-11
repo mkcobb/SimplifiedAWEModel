@@ -2,12 +2,7 @@
 headingTau  = evalin('base','headingTimeConstant_s');
 speedTau    = evalin('base','speedTimeConstant_s');
 vss         = evalin('base','maxSteadySpeed_mPs');
-w           = evalin('base','pathWidth_m');
-h           = evalin('base','pathHeight_m');
 
-phi         = parameterizationVariable;
-
-% vet vectors (parameterized over path variable)
 x = squeeze(linPlnt.stateVector.data(1,:,:));
 y = squeeze(linPlnt.stateVector.data(2,:,:));
 v = squeeze(linPlnt.stateVector.data(3,:,:));
@@ -31,7 +26,6 @@ linPlnt.A.data(2,4,:) = v.*cos(psi);
 linPlnt.A.data(3,4,:) = -2.*cos(psi).*sin(psi).*vss/speedTau;
 
 linPlnt.A.data(4,4,:) = -1/headingTau;
-
 
 linPlnt.B.data(1:3,1,:) = 0;
 

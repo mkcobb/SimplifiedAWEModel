@@ -9,7 +9,7 @@ stateReference = reshape([pathOnlyWaypoints, zeros(size(pathOnlyWaypoints,1),2)]
 xNominal = linPlntDisc.stateVector.data(:);
 
 % The initial system states (will probably have to change this to the
-% system states at the end of the previous iteration
+% system states at the end of the previous iteration)
 x0 = [initialXPosition_m;
     initialYPosition_m;
     initialSpeed_mPs;
@@ -17,11 +17,10 @@ x0 = [initialXPosition_m;
 %The system input at the previous iteration
 uNominal = squeeze(linPlntDisc.ctrlInput.Data);
 
-% Difference in init cond. (next sim starts at xFinal of current sim)
+% Difference in initial cond. (next sim starts at xFinal of current sim)
 deltax0 = tsc.stateVector.data(:,:,end)-tsc.stateVector.data(:,:,1);
 stateReference = stateReference - xNominal;
 
 
 optimizationReference = stateReference - F*deltax0;
 
-gammaMat = makeGammaMatrix(Ad,Bd,ACont, BCont, pathStepTimes,deltauNom);

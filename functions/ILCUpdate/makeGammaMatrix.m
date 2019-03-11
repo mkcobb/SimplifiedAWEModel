@@ -1,11 +1,13 @@
 function [gammaMat] = makeGammaMatrix(Ad,Bd,ACont, BCont, pathStepTimes,deltauNom)
 % Generate the gamma matrix to capture the effect of changes in pathstep
 % timing
-Tnj = diff(pathStepTimes);
+Tnj = [diff(pathStepTimes) 0];
 numStates = size(Ad,1);
 N = numStates*length(Tnj);
 
-betaMat = zeros(N);
+% The beta matrix is the linearization of the lifted matrix with respect to
+% the timesteps
+betaMat = zeros(N,N/numStates);
 for m=1:numStates:N
     currPathStep = ceil(m/numStates);
     for n=1:currPathStep
@@ -23,8 +25,9 @@ for m=1:numStates:N
         end
     end
 end
-%Check if this is necessary. Need to know what the size of deltauNom is
-deltauNomExpand = repelem(deltauNom,numStates);
-gammaMat = betaMat*diag(deltauNomExpand);
+
+%The gamma matrix comes from the linearization of the lifted system input-state relationship
+% which gives x = xNominal+F*deltax0+alphaMat*deltaU+gammaMat*deltaT
+gammaMat = betaMat*diag(deltauNom);
 end
 
