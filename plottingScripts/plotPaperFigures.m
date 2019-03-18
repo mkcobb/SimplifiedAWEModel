@@ -1,3 +1,4 @@
+%%
 close all;
 numIterationsToPlot = 50;
 fontSize = 48;
@@ -9,11 +10,11 @@ windSpeed = 4;
 figure
 ylabel('Max Steady State Speed [m/s]')
 title('Velocity Polar')
-angles = linspace(-pi,pi,1000);
-radii = windSpeed*cos(angles).^2;
+angles = linspace(-2*pi,2*pi,1000);
+radii = maxSteadySpeed_mPs*cos(angles).^2;
 polarplot(angles,radii,'LineWidth',2,'Color',[0 0 0]);
 set(gca,'FontSize',fontSize)
-set(gca,'ThetaLim',[0 90])
+% set(gca,'ThetaLim',[0 90])
 savePlot(gcf,figureDir,'VelocityPolar')
 
 %% Plot Performance Index vs Iteration

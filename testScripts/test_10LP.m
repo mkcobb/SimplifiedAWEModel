@@ -3,7 +3,7 @@ clear;close all;clc;
 SimplifiedModel_init % Initialize model
 
 format compact
-plotSwitch = true;
+plotSwitch = true;  
 pathStep = 0.005; % Path discretization level used in the trajectory linearization
 velocityWeight = 1; % Weight on velocity in performance index for ILC update
 pathHeight_m  = 15;
